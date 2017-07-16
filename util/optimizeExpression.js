@@ -45,7 +45,6 @@ const combineDigitArray = digits => {
   const result = [ ];
   const sortedArray = sortDigitArray(digits);
 
-  console.log('sorted array length: ', sortedArray.length);
   for (let i = 0; i < sortedArray.length; i++){
     if(i === 0){
       result.push(sortedArray[i]);
@@ -68,10 +67,26 @@ const combineDigitArray = digits => {
 };
 
 
+const digitInRange = (range, digit) => {
+  return (digit.value >=  range.lowIndex && digit.value <= range.highIndex);
+};
+
+const digitInExpandedRange = (range, digit) => {
+  return ((digit.value === range.lowIndex -1) || (digit.value  === range.highIndex+1));
+};
+
 const combineDigitsAndRange = (ranges, digits) => {
   const digitsNotInRanges = [ ];
 
   digits.forEach(digit => {
+    ranges.forEach((range, index) => {
+        if (digit.value === range.lowIndex-1){
+          range.lowIndex = digit.value;
+        }else if (digit.value === range.highIndex + 1){
+          range.highIndex = digit.value;
+        }
+    });
+
     const isInARange = ranges.some(range => digitInRange(range, digit));
     if (isInARange === false){
       digitsNotInRanges.push(digit);
@@ -88,11 +103,6 @@ const combineDigitsAndRange = (ranges, digits) => {
   return rangeCopy;
 };
 
-const digitInRange = (range, digit) => {
-  return (digit.value >=  range.lowIndex && digit.value <= range.highIndex);
-};
-
-
 
 const optimizeRanges = rangeExpression => {
   if (rangeExpression.length === 0){
@@ -105,7 +115,18 @@ const optimizeRanges = rangeExpression => {
   for (let i = 1;  i < sortedRanges.length; i++){
     if (sortedRanges[i].highIndex <= results[results.length -1].highIndex){
       continue; // it's already included in the other range
-    }else{
+    }
+    else if (
+      (sortedRanges[i].type === 'range' && results[results.length-1].type === 'range') &&
+      ((sortedRanges[i].lowIndex === results[results.length -1].highIndex) ||
+      (sortedRanges[i].lowIndex === results[results.length -1].highIndex+1))){
+      results[results.length-1] = ({
+        type: 'range',
+        lowIndex: results[results.length-1].lowIndex,
+        highIndex: sortedRanges[i].highIndex,
+      });
+    }
+    else{
       results.push(sortedRanges[i]);
     }
   }
@@ -121,7 +142,7 @@ const optimizeSplitValueExpression = splitValueExpression  => {
   }));
 
   if (copy.some(copy => copy.type === 'any')){
-    return generateSplitValue('*');
+    return [generateSplitValue('*')];
   }
 
   const ranges = splitValueExpression.filter(expression => expression.type === 'range');

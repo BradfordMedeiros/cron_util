@@ -1,6 +1,6 @@
 
 const generateSplitValue = require('./generateSplitValue');
-const optimizeExpression = require('./optimizeExpression');
+const optimizeSplitValueExpression = require('./optimizeExpression');
 
 const getSplitValueExpression = commaRangeString => {
   return commaRangeString.split(',').map(range => range.trim()).filter(x => x.length > 0).map(generateSplitValue);
@@ -18,7 +18,7 @@ const addToSplitValueExpression = (splitValueExpression, index) => {
     value: index,
   });
 
-  return optimizeExpression(copy);
+  return optimizeSplitValueExpression(copy);
 };
 
 const removeToSplitValueExpression = (splitValueExpression, index) => {
@@ -56,10 +56,16 @@ const tryGetSplitValueExpression = commaRangeString => {
   }
 };
 
+const optimize = commaRangeString => {
+  return convertSplitValueExpressionToString(optimizeSplitValueExpression(tryGetSplitValueExpression(commaRangeString)));
+}
+
+
 module.exports = {
   tryGetSplitValueExpression,
   convertSplitValueExpressionToString,
   addToSplitValueExpression,
   removeToSplitValueExpression,
+  optimize,
 };
 
