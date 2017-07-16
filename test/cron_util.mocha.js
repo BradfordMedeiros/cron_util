@@ -108,6 +108,10 @@ describe('expression optimization', () => {
     const optimizedString = splitValues.optimize('2, 5, 2,2,2');
     assert.equal(optimizedString, '2,5');
   });
+  it('digit - merging to range', () => {
+    const optimizedString = splitValues.optimize('1,3,2');
+    assert.equal(optimizedString, '1-3');
+  });
   it('digit - multiple repeated digits', () => {
     const optimizedString = splitValues.optimize('2, 5, 2, 8, 5, 5, 5, 2, 5, 12, 12, 2, 2,12');
     assert.equal(optimizedString, '2,5,8,12');
@@ -152,5 +156,44 @@ describe('expression optimization', () => {
     const optimizedString = splitValues.optimize('1-3,3-6');
     assert.equal(optimizedString,'1-6');
   });
+  it('complex optimization', () => {
+    const optimizedString = splitValues.optimize('1-3,6,4,2,3-5,7-10');
+    assert.equal(optimizedString,'1-10');
+  });
+  it('another complex optimization', () => {
+    const optimizedString = splitValues.optimize('7-10, 1,3,6,4,2,3-5');
+    assert.equal(optimizedString,'1-10');
+  });
+  it('yet another complex optimization', () => {
+    const optimizedString = splitValues.optimize('1,2,5-6,3,9,12,1-3');
+    assert.equal(optimizedString,'1-3,5-6,9,12');
+  });
+  it('even yet another complex optimization', () => {
+    const optimizedString = splitValues.optimize('1,2,5-6,3,4,9,12,1-3');
+    assert.equal(optimizedString,'1-6,9,12');
+  });
+  it('complex with any', () => {
+    const optimizedString = splitValues.optimize('1,2,5-6,3,4,*, 9,12,1-3');
+    assert.equal(optimizedString,'*');
+  });
+});
 
+describe('adding to string expressions', () => {
+  it('adding any index to any is still any', () => {
+    const string = splitValues.addToStringExpression('*', 3);
+    assert.equal(string,'*');
+  });
+  it('adding single digit to another single digit', () => {
+    const string = splitValues.addToStringExpression('1', 3);
+    assert.equal(string,'1,3');
+  });
+
+  it('adding single digit 1 up creates range', () => {
+    const string = splitValues.addToStringExpression('1', 2);
+    assert.equal(string,'1-2');
+  });
+  it('filling in a range', () => {
+    const string = splitValues.addToStringExpression('1,3', 2);
+    assert.equal(string,'1-3');
+  });
 });

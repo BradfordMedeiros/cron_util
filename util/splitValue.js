@@ -58,13 +58,22 @@ const tryGetSplitValueExpression = commaRangeString => {
 
 const optimize = commaRangeString => {
   return convertSplitValueExpressionToString(optimizeSplitValueExpression(tryGetSplitValueExpression(commaRangeString)));
-}
+};
+
+const addToStringExpression = (commaRangeString, index) => (
+  convertSplitValueExpressionToString(
+    addToSplitValueExpression(
+      tryGetSplitValueExpression(commaRangeString)
+    ,index)
+  )
+);
 
 
 module.exports = {
   tryGetSplitValueExpression,
   convertSplitValueExpressionToString,
   addToSplitValueExpression,
+  addToStringExpression,
   removeToSplitValueExpression,
   optimize,
 };

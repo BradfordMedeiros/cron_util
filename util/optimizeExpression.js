@@ -80,9 +80,9 @@ const combineDigitsAndRange = (ranges, digits) => {
 
   digits.forEach(digit => {
     ranges.forEach((range, index) => {
-        if (digit.value === range.lowIndex-1){
+        if (digit.value === (range.lowIndex-1)){
           range.lowIndex = digit.value;
-        }else if (digit.value === range.highIndex + 1){
+        }else if (digit.value === (range.highIndex + 1)){
           range.highIndex = digit.value;
         }
     });
@@ -116,9 +116,16 @@ const optimizeRanges = rangeExpression => {
     if (sortedRanges[i].highIndex <= results[results.length -1].highIndex){
       continue; // it's already included in the other range
     }
+    else if (sortedRanges[i].type === 'digit' && ((results[results.length-1].highIndex + 1) === sortedRanges[i].value)){
+      results[results.length-1] = ({
+        type: 'range',
+        lowIndex: results[results.length-1].lowIndex,
+        highIndex: sortedRanges[i].value,
+      })
+    }
     else if (
       (sortedRanges[i].type === 'range' && results[results.length-1].type === 'range') &&
-      ((sortedRanges[i].lowIndex === results[results.length -1].highIndex) ||
+      ((sortedRanges[i].lowIndex <= results[results.length -1].highIndex) ||
       (sortedRanges[i].lowIndex === results[results.length -1].highIndex+1))){
       results[results.length-1] = ({
         type: 'range',
@@ -150,6 +157,7 @@ const optimizeSplitValueExpression = splitValueExpression  => {
 
   const combinedDigits = combineDigitArray(digits);
   const combinedDigitsWithRangesUnoptimized = combineDigitsAndRange(ranges, combinedDigits);
+  cd = combinedDigitsWithRangesUnoptimized;
 
   return optimizeRanges(combinedDigitsWithRangesUnoptimized);
 
