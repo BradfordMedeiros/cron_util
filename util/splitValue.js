@@ -22,10 +22,37 @@ const addToSplitValueExpression = (splitValueExpression, index) => {
 };
 
 
+const checkSplitValidAndAddIfValid = (splitValue, newExpression) => {
+  if (splitValue.lowIndex === splitValue.highIndex){
+    newExpression.push(({
+      type: 'digit',
+      value: splitValue.lowIndex,
+    }))
+  }else if (!(splitValue.lowIndex > splitValue.highIndex)){
+    newExpression.push(splitValue);
+  }
+};
+
 const removeToSplitValueExpression = (splitValueExpression, index) => {
   const newExpression = [];
   splitValueExpression.forEach((splitValue) => {
-    if (splitValue.type === 'digit' ) {
+    if (splitValue.type === 'any'){
+      const lowRange = ({
+        type: 'range',
+        lowIndex: 0,
+        highIndex: index-1,
+      });
+      const highRange = ({
+        type: 'range',
+        lowIndex: index+1,
+        highIndex: 255,
+      });
+
+      checkSplitValidAndAddIfValid(lowRange, newExpression);
+      checkSplitValidAndAddIfValid(highRange, newExpression);
+
+    }
+    else if (splitValue.type === 'digit' ) {
       if (splitValue.value !== index){
         newExpression.push(splitValue);
       }
@@ -42,23 +69,8 @@ const removeToSplitValueExpression = (splitValueExpression, index) => {
           highIndex: splitValue.highIndex,
         });
 
-        if (lowSplitValue.lowIndex === lowSplitValue.highIndex){
-          newExpression.push(({
-            type: 'digit',
-            value: lowSplitValue.lowIndex,
-          }))
-        }else if (!(lowSplitValue.lowIndex > lowSplitValue.highIndex)){
-          newExpression.push(lowSplitValue);
-        }
-
-        if (highSplitValue.lowIndex === highSplitValue.highIndex){
-          newExpression.push(({
-            type: 'digit',
-            value: highSplitValue.lowIndex,
-          }))
-        }else if (!(highSplitValue.lowIndex > highSplitValue.highIndex)){
-          newExpression.push(highSplitValue);
-        }
+        checkSplitValidAndAddIfValid(lowSplitValue, newExpression);
+        checkSplitValidAndAddIfValid(highSplitValue, newExpression);
       }else{
         newExpression.push(splitValue);
       }

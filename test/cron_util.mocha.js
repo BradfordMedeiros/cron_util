@@ -199,21 +199,25 @@ describe('adding to string expressions', () => {
 });
 
 describe('removing from string expressions', () => {
-  it('adding any index to any is still any', () => {
-    const string = splitValues.addToStringExpression('*', 3);
-    assert.equal(string,'*');
+  it('removing from single digit', () => {
+    const string = splitValues.removeToStringExpression('3',3);
+    assert.equal(string,'');
   });
-  it('adding single digit to another single digit', () => {
-    const string = splitValues.addToStringExpression('1', 3);
-    assert.equal(string,'1,3');
+  it('removing from single repeated digit', () => {
+    const string = splitValues.removeToStringExpression('7-9,5,3,3,3,3',3);
+    assert.equal(string,'7-9,5');
+  });
+  it('removing from a range', () => {
+    const string = splitValues.removeToStringExpression('3,3-5',3);
+    assert.equal(string,'4-5');
+  });
+  it('removing from all', () => {
+    const string = splitValues.removeToStringExpression('*',3);
+    assert.equal(string,'0-2,4-255');
+  });
+  it('complex removing from all and other unoptimized expression', () => {
+    const string = splitValues.removeToStringExpression('*,*,*,1-5,2-5',9);
+    assert.equal(string,'0-8,10-255');
   });
 
-  it('adding single digit 1 up creates range', () => {
-    const string = splitValues.addToStringExpression('1', 2);
-    assert.equal(string,'1-2');
-  });
-  it('filling in a range', () => {
-    const string = splitValues.addToStringExpression('1,3', 2);
-    assert.equal(string,'1-3');
-  });
 });
