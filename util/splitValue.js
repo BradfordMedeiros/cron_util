@@ -33,7 +33,7 @@ const checkSplitValidAndAddIfValid = (splitValue, newExpression) => {
   }
 };
 
-const removeToSplitValueExpression = (splitValueExpression, index) => {
+const removeToSplitValueExpression = (splitValueExpression, index, maxValue) => {
   const newExpression = [];
   splitValueExpression.forEach((splitValue) => {
     if (splitValue.type === 'any'){
@@ -45,7 +45,7 @@ const removeToSplitValueExpression = (splitValueExpression, index) => {
       const highRange = ({
         type: 'range',
         lowIndex: index+1,
-        highIndex: 255,
+        highIndex: maxValue,
       });
 
       checkSplitValidAndAddIfValid(lowRange, newExpression);
@@ -125,12 +125,14 @@ const addToStringExpression = (commaRangeString, index) => (
   )
 );
 
-const removeToStringExpression = (commaRangeString, index) => (
+const removeToStringExpression = (commaRangeString, index, maxValue) => (
   convertSplitValueExpressionToString(
     optimizeSplitValueExpression(
       removeToSplitValueExpression(
         tryGetSplitValueExpression(commaRangeString)
-        ,index)
+        ,index,
+        maxValue
+      )
     )
   )
 );
