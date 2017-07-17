@@ -86,7 +86,7 @@ const isSelectedUtil = {
     remove: removeAny(1,59),
   },
   hour: {
-    isSelectedAny: isSelectedAny(getHourExpression),
+    isSelected: isSelectedAny(getHourExpression),
     add: addAny(2),
     remove: removeAny(2,11),
   },
@@ -96,7 +96,7 @@ const isSelectedUtil = {
     remove: removeAny(3, 6),
   },
   week: {
-    isSelectedAny: isSelectedAny(getWeekExpression),
+    isSelected: isSelectedAny(getWeekExpression),
     add: addAny(4),
     remove: removeAny(4,255),
   },
