@@ -197,3 +197,23 @@ describe('adding to string expressions', () => {
     assert.equal(string,'1-3');
   });
 });
+
+describe('removing from string expressions', () => {
+  it('adding any index to any is still any', () => {
+    const string = splitValues.addToStringExpression('*', 3);
+    assert.equal(string,'*');
+  });
+  it('adding single digit to another single digit', () => {
+    const string = splitValues.addToStringExpression('1', 3);
+    assert.equal(string,'1,3');
+  });
+
+  it('adding single digit 1 up creates range', () => {
+    const string = splitValues.addToStringExpression('1', 2);
+    assert.equal(string,'1-2');
+  });
+  it('filling in a range', () => {
+    const string = splitValues.addToStringExpression('1,3', 2);
+    assert.equal(string,'1-3');
+  });
+});

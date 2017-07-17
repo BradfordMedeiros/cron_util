@@ -21,8 +21,51 @@ const addToSplitValueExpression = (splitValueExpression, index) => {
   return optimizeSplitValueExpression(copy);
 };
 
+
 const removeToSplitValueExpression = (splitValueExpression, index) => {
-  return splitValueExpression;
+  const newExpression = [];
+  splitValueExpression.forEach((splitValue) => {
+    if (splitValue.type === 'digit' ) {
+      if (splitValue.value !== index){
+        newExpression.push(splitValue);
+      }
+    }else if (splitValue.type === 'range'){
+      if (index >= splitValue.lowIndex && index <= splitValue.highIndex){
+        const lowSplitValue = ({
+          type: 'range',
+          lowIndex: splitValue.lowIndex,
+          highIndex: index -1,
+        });
+        const highSplitValue = ({
+          type: 'range',
+          lowIndex: index+1,
+          highIndex: splitValue.highIndex,
+        });
+
+        if (lowSplitValue.lowIndex === lowSplitValue.highIndex){
+          newExpression.push(({
+            type: 'digit',
+            value: lowSplitValue.lowIndex,
+          }))
+        }else if (!(lowSplitValue.lowIndex > lowSplitValue.highIndex)){
+          newExpression.push(lowSplitValue);
+        }
+
+        if (highSplitValue.lowIndex === highSplitValue.highIndex){
+          newExpression.push(({
+            type: 'digit',
+            value: highSplitValue.lowIndex,
+          }))
+        }else if (!(highSplitValue.lowIndex > highSplitValue.highIndex)){
+          newExpression.push(highSplitValue);
+        }
+      }else{
+        newExpression.push(splitValue);
+      }
+    }
+
+  });
+  return newExpression;
 };
 
 const rangeToString = splitValue => {
@@ -62,12 +105,23 @@ const optimize = commaRangeString => {
 
 const addToStringExpression = (commaRangeString, index) => (
   convertSplitValueExpressionToString(
-    addToSplitValueExpression(
-      tryGetSplitValueExpression(commaRangeString)
-    ,index)
+    optimizeSplitValueExpression(
+      addToSplitValueExpression(
+        tryGetSplitValueExpression(commaRangeString)
+      ,index)
+    )
   )
 );
 
+const removeToStringExpression = (commaRangeString, index) => (
+  convertSplitValueExpressionToString(
+    optimizeSplitValueExpression(
+      removeToSplitValueExpression(
+        tryGetSplitValueExpression(commaRangeString)
+        ,index)
+    )
+  )
+);
 
 module.exports = {
   tryGetSplitValueExpression,
@@ -75,6 +129,7 @@ module.exports = {
   addToSplitValueExpression,
   addToStringExpression,
   removeToSplitValueExpression,
+  removeToStringExpression,
   optimize,
 };
 
