@@ -138,9 +138,8 @@ const removeToStringExpression = (commaRangeString, index) => (
 module.exports = {
   tryGetSplitValueExpression,
   convertSplitValueExpressionToString,
-  addToSplitValueExpression,
+
   addToStringExpression,
-  removeToSplitValueExpression,
   removeToStringExpression,
   optimize,
 };
